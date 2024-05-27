@@ -5,6 +5,7 @@ export default {
       http: {
         method: 'post',
         path: 'user/login',
+        cors: true,
       },
     },
   ],

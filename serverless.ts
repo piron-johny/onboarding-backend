@@ -1,14 +1,15 @@
 /* eslint-disable no-template-curly-in-string */
 import type { AWS } from '@serverless/typescript';
 
-import { hello, registration, login } from './src/functions';
-import { userTable } from './src/tables/';
+import { hello, registration, login, uploadImage } from './src/functions';
+import { userTable, imageTable } from './src/tables';
 
 const serverlessConfiguration: AWS = {
   service: 'serverless-typescript',
   frameworkVersion: '3.38.0',
   useDotenv: true,
   custom: {
+    bucket: 'images-react-test',
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true,
@@ -53,10 +54,17 @@ const serverlessConfiguration: AWS = {
     },
     lambdaHashingVersion: '20201221',
   },
-  functions: { hello, registration, login },
+  functions: { hello, registration, login, uploadImage },
   resources: {
     Resources: {
       UserTable: userTable,
+      ImageTable: imageTable,
+      ImageBucket: {
+        Type: 'AWS::S3::Bucket',
+        Properties: {
+          BucketName: '${self:custom.bucket}',
+        },
+      },
     },
   },
 };

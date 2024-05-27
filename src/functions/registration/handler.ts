@@ -1,6 +1,6 @@
 import { apiResponses } from '@/libs';
 import { dynamoDbService } from '@/servises/dynamoDB';
-import { userTable } from '@/tables';
+import { userTable } from '@/tables/user';
 import { PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import {
   APIGatewayProxyEvent,
@@ -18,7 +18,7 @@ export const main: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   console.log('event: ', event);
-  const body = JSON.parse(event.body);
+  const body = JSON.parse(event.body ?? '{}');
   const userName = body?.name;
   const userPassword = body?.password;
 

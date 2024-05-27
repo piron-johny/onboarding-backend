@@ -1,5 +1,5 @@
-import { userTable } from '@/tables';
-import { User } from '@/types/user';
+import { userTable } from '@/tables/user';
+import { Image, User } from '@/types';
 import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
@@ -9,6 +9,8 @@ import {
   GetCommand,
   ScanCommandInput,
   ScanCommand,
+  QueryCommand,
+  QueryCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 
 const dbConfig: DynamoDBClientConfig = { region: 'us-east-1' };
@@ -72,6 +74,50 @@ class DynamoDbService {
       console.error('ERROR DB GET_ALL USERS :', error);
       console.log('PARAMS : ', params);
       throw new Error('Get user error');
+    }
+  }
+
+  async createImage(params: PutCommandInput): Promise<void> {
+    try {
+      await this.dbClient.send(new PutCommand(params));
+    } catch (error) {
+      console.error('ERROR DB CREATE IMAGE :', error);
+      console.log('PARAMS : ', params);
+      throw new Error('Create image error.');
+    }
+  }
+
+  async getImage(params: GetCommandInput): Promise<Image | undefined> {
+    try {
+      const result = await this.dbClient.send(new GetCommand(params));
+      return result.Item as Image;
+    } catch (error) {
+      console.error('ERROR DB GET IMAGE :', error);
+      console.log('PARAMS : ', params);
+      throw new Error('Get image error');
+    }
+  }
+
+  async getImagesByUserId(userId: string): Promise<Image[]> {
+    const params: QueryCommandInput = {
+      TableName: 'ImageTable',
+      IndexName: 'UserIdIndex',
+      KeyConditionExpression: '#userId = :userIdValue',
+      ExpressionAttributeNames: {
+        '#userId': 'userId',
+      },
+      ExpressionAttributeValues: {
+        ':userIdValue': userId,
+      },
+    };
+
+    try {
+      const result = await this.dbClient.send(new QueryCommand(params));
+      return result.Items as Image[];
+    } catch (error) {
+      console.error('ERROR DB GET IMAGES BY USER ID:', error);
+      console.log('PARAMS : ', params);
+      throw new Error('Get images by user ID error.');
     }
   }
 }

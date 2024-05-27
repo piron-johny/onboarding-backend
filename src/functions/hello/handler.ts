@@ -1,6 +1,6 @@
 import { apiResponses } from '@/libs';
 import { dynamoDbService } from '@/servises/dynamoDB';
-import { userTable } from '@/tables';
+import { userTable } from '@/tables/user';
 import { GetCommandInput, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import {
   APIGatewayProxyEvent,
@@ -18,7 +18,10 @@ export const main: APIGatewayProxyHandler = async (
   };
 
   try {
-    const dd = await dynamoDbService.getAllUsers(params);
+    // const dd = await dynamoDbService.getAllUsers(params);
+    const dd = await dynamoDbService.getImagesByUserId(
+      'd8563bd8-01ad-4971-ada4-9ff5323211f1',
+    );
     console.log('dd: ', dd);
     return apiResponses._200({ user: dd });
   } catch (error) {
