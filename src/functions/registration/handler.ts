@@ -23,6 +23,13 @@ export const main: APIGatewayProxyHandler = async (
   const userPassword = body?.password;
 
   if (userName && userPassword) {
+    const [user] = await dynamoDbService.findUserByName(userName);
+
+    if (user)
+      return apiResponses._400({
+        message: `User with name:${userName} is already exist`,
+      });
+
     const id = randomUUID();
 
     const hash = bcrypt.hashSync(userPassword, saltRounds);

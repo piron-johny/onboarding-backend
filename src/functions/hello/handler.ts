@@ -19,10 +19,9 @@ export const main: APIGatewayProxyHandler = async (
 
   try {
     const dd = await dynamoDbService.getAllUsers(params);
-    console.log('dd: ', dd.Items);
-    return apiResponses._200({ user: dd.Items });
+    console.log('dd: ', dd);
+    return apiResponses._200({ user: dd });
   } catch (error) {
-    return apiResponses._200({ message: 'ERROR' });
+    return apiResponses._200({ message: 'ERROR', error });
   }
-  return apiResponses._404({ message: 'Bad request' });
 };

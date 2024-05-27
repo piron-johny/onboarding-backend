@@ -1,3 +1,5 @@
+import { userTable } from '@/tables';
+import { User } from '@/types/user';
 import { DynamoDBClient, DynamoDBClientConfig } from '@aws-sdk/client-dynamodb';
 import {
   DynamoDBDocumentClient,
@@ -26,10 +28,13 @@ class DynamoDbService {
       throw new Error('Create user error.');
     }
   }
-
-  async getUser(params: GetCommandInput) {
+  async getUserById(id: string) {
+    const params: GetCommandInput = {
+      TableName: userTable.Properties.TableName,
+      Key: { id },
+    };
     try {
-      return await this.dbClient.send(new GetCommand(params));
+      return (await this.dbClient.send(new GetCommand(params))).Item as User;
     } catch (error) {
       console.error('ERROR DB GET USER :', error);
       console.log('PARAMS : ', params);
@@ -37,9 +42,32 @@ class DynamoDbService {
     }
   }
 
+  async findUserByName(name: string): Promise<User[]> {
+    const params: ScanCommandInput = {
+      TableName: userTable.Properties.TableName,
+      FilterExpression: '#name = :nameValue',
+      ExpressionAttributeNames: {
+        '#name': 'name',
+      },
+      ExpressionAttributeValues: {
+        ':nameValue': name,
+      },
+    };
+
+    try {
+      const result = await this.dbClient.send(new ScanCommand(params));
+      return result.Items as User[];
+    } catch (error) {
+      console.error('ERROR DB FIND USER BY NAME:', error);
+      console.log('PARAMS : ', params);
+      throw new Error('Find user by name error.');
+    }
+  }
+
   async getAllUsers(params: ScanCommandInput) {
     try {
-      return await this.dbClient.send(new ScanCommand(params));
+      return (await this.dbClient.send(new ScanCommand(params)))
+        .Items as User[];
     } catch (error) {
       console.error('ERROR DB GET_ALL USERS :', error);
       console.log('PARAMS : ', params);

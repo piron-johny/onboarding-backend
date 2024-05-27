@@ -1,7 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import type { AWS } from '@serverless/typescript';
 
-import { hello, registration } from './src/functions';
+import { hello, registration, login } from './src/functions';
 import { userTable } from './src/tables/';
 
 const serverlessConfiguration: AWS = {
@@ -53,7 +53,7 @@ const serverlessConfiguration: AWS = {
     },
     lambdaHashingVersion: '20201221',
   },
-  functions: { hello, registration },
+  functions: { hello, registration, login },
   resources: {
     Resources: {
       UserTable: userTable,
