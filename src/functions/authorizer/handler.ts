@@ -18,14 +18,16 @@ export const main: APIGatewayAuthorizerHandler = async (
   console.log('event: ', event);
   const authToken = event.headers.Authorization ?? '';
   const methodArn = event.methodArn;
+  const [bearer, token] = authToken.split(' ');
+  console.log('===> token: ', token);
 
-  if (!authToken) {
+  if (!authToken || bearer !== 'Bearer' || token.length === 0) {
     callback('Unauthorized');
     return;
   }
 
   try {
-    const decoded = jwt.verify(authToken, secretKey) as AuthContext;
+    const decoded = jwt.verify(token, secretKey) as AuthContext;
 
     callback(
       null,

@@ -7,6 +7,7 @@ import {
   login,
   uploadImage,
   authorizer,
+  getAllUserImages,
 } from './src/functions';
 import { userTable, imageTable } from './src/tables';
 
@@ -74,7 +75,14 @@ const serverlessConfiguration: AWS = {
     },
     lambdaHashingVersion: '20201221',
   },
-  functions: { hello, registration, login, uploadImage, authorizer },
+  functions: {
+    hello,
+    registration,
+    login,
+    uploadImage,
+    authorizer,
+    getAllUserImages,
+  },
   resources: {
     Resources: {
       UserTable: userTable,
