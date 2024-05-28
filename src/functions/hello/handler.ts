@@ -12,6 +12,9 @@ export const main: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   console.log('event: ', event);
+  const { userId } = event.requestContext.authorizer;
+
+  console.log('userId: ', userId);
 
   const params: ScanCommandInput = {
     TableName: userTable.Properties.TableName,
@@ -19,12 +22,10 @@ export const main: APIGatewayProxyHandler = async (
 
   try {
     // const dd = await dynamoDbService.getAllUsers(params);
-    const dd = await dynamoDbService.getImagesByUserId(
-      'd8563bd8-01ad-4971-ada4-9ff5323211f1',
-    );
+    const dd = await dynamoDbService.getImagesByUserId(userId);
     console.log('dd: ', dd);
     return apiResponses._200({ user: dd });
   } catch (error) {
-    return apiResponses._200({ message: 'ERROR', error });
+    return apiResponses._400({ message: 'ERROR', error });
   }
 };

@@ -29,6 +29,7 @@ export const main: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   console.log('event: ', event);
+  const { userId } = event.requestContext.authorizer;
 
   console.log('bucket: ', bucket);
   try {
