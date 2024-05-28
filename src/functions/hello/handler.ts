@@ -1,5 +1,5 @@
 import { apiResponses } from '@/libs';
-import { dynamoDbService } from '@/servises/dynamoDB';
+import { dynamoDbService } from '@/services/dynamoDB';
 import { userTable } from '@/tables/user';
 import { GetCommandInput, ScanCommandInput } from '@aws-sdk/lib-dynamodb';
 import {

@@ -1,11 +1,11 @@
 import { apiResponses } from '@/libs';
-import { dynamoDbService } from '@/servises/dynamoDB';
+import { dynamoDbService } from '@/services/dynamoDB';
 import {
   APIGatewayProxyEvent,
   APIGatewayProxyHandler,
   APIGatewayProxyResult,
 } from 'aws-lambda';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const secretKey = '1h175dyw54';

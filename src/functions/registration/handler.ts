@@ -1,5 +1,5 @@
 import { apiResponses } from '@/libs';
-import { dynamoDbService } from '@/servises/dynamoDB';
+import { dynamoDbService } from '@/services/dynamoDB';
 import { userTable } from '@/tables/user';
 import { PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import {
@@ -8,7 +8,7 @@ import {
   APIGatewayProxyResult,
 } from 'aws-lambda';
 import { randomUUID } from 'node:crypto';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 const saltRounds = 10;

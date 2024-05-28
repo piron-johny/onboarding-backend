@@ -40,6 +40,20 @@ const serverlessConfiguration: AWS = {
         Action: ['codedeploy:*'],
         Resource: '*',
       },
+      {
+        Effect: 'Allow',
+        Action: [
+          'dynamodb:Scan',
+          'dynamodb:Query',
+          'dynamodb:PutItem',
+          'dynamodb:GetItem',
+          'dynamodb:UpdateItem',
+        ],
+        Resource: [
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/UserTable/*',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/ImageTable/*',
+        ],
+      },
     ],
     apiGateway: {
       minimumCompressionSize: 1024,

@@ -1,29 +1,23 @@
+import { generatePolicy } from '@/libs';
+import { AuthContext } from '@/types';
 import {
   APIGatewayAuthorizerHandler,
   APIGatewayAuthorizerResult,
-  APIGatewayTokenAuthorizerEvent,
+  APIGatewayRequestAuthorizerEvent,
   Callback,
   Context,
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
-export interface AuthContext {
-  userId: string;
-}
-
 const secretKey = '1h175dyw54';
-
 export const main: APIGatewayAuthorizerHandler = async (
-  event: APIGatewayTokenAuthorizerEvent,
+  event: APIGatewayRequestAuthorizerEvent,
   _context: Context,
   callback: Callback<APIGatewayAuthorizerResult>,
 ): Promise<APIGatewayAuthorizerResult> => {
   console.log('event: ', event);
-  const authToken = event.authorizationToken ?? '';
+  const authToken = event.headers.Authorization ?? '';
   const methodArn = event.methodArn;
-
-  console.log('authToken: ', authToken);
-  console.log('methodArn: ', methodArn);
 
   if (!authToken) {
     callback('Unauthorized');
@@ -42,36 +36,4 @@ export const main: APIGatewayAuthorizerHandler = async (
   } catch (e) {
     callback('Unauthorized');
   }
-};
-
-const generatePolicy = function (
-  principalId: string,
-  effect: string,
-  resource: string,
-  context: AuthContext,
-): APIGatewayAuthorizerResult {
-  // Required output:
-  const authResponse: any = {
-    principalId,
-    context,
-  };
-
-  authResponse.principalId = principalId;
-
-  if (effect && resource) {
-    const policyDocument = {
-      Version: '2012-10-17',
-      Statement: [
-        {
-          Action: 'execute-api:Invoke',
-          Effect: effect,
-          Resource: resource,
-        },
-      ],
-    };
-
-    authResponse.policyDocument = policyDocument;
-  }
-
-  return authResponse;
 };

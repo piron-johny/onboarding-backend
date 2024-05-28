@@ -11,7 +11,7 @@ import {
   PutObjectCommandInput,
   PutObjectCommand,
 } from '@aws-sdk/client-s3';
-import { dynamoDbService } from '@/servises/dynamoDB';
+import { dynamoDbService } from '@/services/dynamoDB';
 import { PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import { imageTable } from '@/tables';
 
