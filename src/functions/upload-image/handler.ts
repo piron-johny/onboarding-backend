@@ -43,14 +43,6 @@ export const main: APIGatewayProxyHandler = async (
     ) as UploadBody;
     const { imageBase64, fileType } = imageData ?? {};
 
-    console.log('name: ', {
-      imageData,
-      name,
-      description,
-      imageBase64,
-      fileType,
-    });
-
     if (!MIME_TYPES.includes(fileType)) {
       return apiResponses._400({ message: 'Unsupported file type' });
     }
@@ -61,7 +53,7 @@ export const main: APIGatewayProxyHandler = async (
       return apiResponses._400({ message: 'File size exceeds the limit' });
     }
 
-    const fileName = `${id}.${fileType}`;
+    const fileName = `${id}.${fileType.split('/')[1]}`;
 
     const params = {
       Bucket: bucket,
@@ -73,7 +65,6 @@ export const main: APIGatewayProxyHandler = async (
     await s3Client.send(new PutObjectCommand(params));
 
     const url = `https://${bucket}.s3.amazonaws.com/${fileName}`;
-    console.log('url: ', url);
 
     const createImageParams: PutCommandInput = {
       TableName: imageTable.Properties.TableName,

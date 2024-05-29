@@ -1,10 +1,10 @@
 export default {
-  handler: 'src/functions/hello/handler.main',
+  handler: 'src/functions/remove-image/handler.main',
   events: [
     {
       http: {
-        method: 'get',
-        path: 'hello',
+        method: 'delete',
+        path: 'image/remove',
         cors: true,
         authorizer: {
           name: 'authorizer',
@@ -15,4 +15,8 @@ export default {
       },
     },
   ],
+  timeout: 15,
+  environment: {
+    bucket: '${self:custom.bucket}',
+  },
 };

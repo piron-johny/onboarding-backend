@@ -19,7 +19,6 @@ export const main: APIGatewayAuthorizerHandler = async (
   const authToken = event.headers.Authorization ?? '';
   const methodArn = event.methodArn;
   const [bearer, token] = authToken.split(' ');
-  console.log('===> token: ', token);
 
   if (!authToken || bearer !== 'Bearer' || token.length === 0) {
     callback('Unauthorized');

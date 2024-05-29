@@ -2,12 +2,12 @@
 import type { AWS } from '@serverless/typescript';
 
 import {
-  hello,
   registration,
   login,
   uploadImage,
   authorizer,
   getAllUserImages,
+  removeImage,
 } from './src/functions';
 import { userTable, imageTable } from './src/tables';
 
@@ -51,19 +51,18 @@ const serverlessConfiguration: AWS = {
           'dynamodb:PutItem',
           'dynamodb:GetItem',
           'dynamodb:UpdateItem',
+          'dynamodb:DeleteItem',
+          's3:PutObject',
+          's3:GetObject',
+          's3:ListBucket',
+          's3:DeleteObject',
         ],
-        Resource: [
-          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.userTable}',
-          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}',
-          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}/*',
-        ],
-      },
-      {
-        Effect: 'Allow',
-        Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
         Resource: [
           'arn:aws:s3:::${self:custom.bucket}',
           'arn:aws:s3:::${self:custom.bucket}/*',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.userTable}',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}/*',
         ],
       },
     ],
@@ -87,12 +86,12 @@ const serverlessConfiguration: AWS = {
     lambdaHashingVersion: '20201221',
   },
   functions: {
-    hello,
     registration,
     login,
     uploadImage,
     authorizer,
     getAllUserImages,
+    removeImage,
   },
   resources: {
     Resources: {

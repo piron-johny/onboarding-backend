@@ -24,7 +24,6 @@ export const main: APIGatewayProxyHandler = async (
       const [user] = await dynamoDbService.findUserByName(userName);
 
       if (user) {
-        console.log('\n\n ------ user: ', user);
         const { password, ...other } = user;
         const comparePass = bcrypt.compareSync(userPassword, password);
 

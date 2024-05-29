@@ -11,6 +11,8 @@ import {
   ScanCommand,
   QueryCommand,
   QueryCommandInput,
+  DeleteCommand,
+  DeleteCommandInput,
 } from '@aws-sdk/lib-dynamodb';
 
 const dbConfig: DynamoDBClientConfig = { region: 'us-east-1' };
@@ -27,7 +29,7 @@ class DynamoDbService {
     } catch (error) {
       console.error('ERROR DB CREATE USER :', error);
       console.log('PARAMS : ', params);
-      throw new Error('Create user error.');
+      throw new Error('Create user error');
     }
   }
   async getUserById(id: string) {
@@ -62,7 +64,7 @@ class DynamoDbService {
     } catch (error) {
       console.error('ERROR DB FIND USER BY NAME:', error);
       console.log('PARAMS : ', params);
-      throw new Error('Find user by name error.');
+      throw new Error('Find user by name error');
     }
   }
 
@@ -83,7 +85,7 @@ class DynamoDbService {
     } catch (error) {
       console.error('ERROR DB CREATE IMAGE :', error);
       console.log('PARAMS : ', params);
-      throw new Error('Create image error.');
+      throw new Error('Create image error');
     }
   }
 
@@ -117,7 +119,28 @@ class DynamoDbService {
     } catch (error) {
       console.error('ERROR DB GET IMAGES BY USER ID:', error);
       console.log('PARAMS : ', params);
-      throw new Error('Get images by user ID error.');
+      throw new Error('Get images by user ID error');
+    }
+  }
+
+  async removeImageItem(imageId: string, userId: string) {
+    try {
+      const deleteItemParams: DeleteCommandInput = {
+        TableName: 'ImageTable',
+        Key: {
+          id: imageId,
+        },
+        ConditionExpression: 'userId = :userId',
+        ExpressionAttributeValues: {
+          ':userId': userId,
+        },
+      };
+
+      await this.dbClient.send(new DeleteCommand(deleteItemParams));
+    } catch (error) {
+      console.error('ERROR DB DELETE IMAGE:', error);
+      console.log('IMAGE ID : ', imageId);
+      throw new Error('Delete images error');
     }
   }
 }
