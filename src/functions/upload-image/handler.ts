@@ -4,18 +4,12 @@ import {
   APIGatewayProxyHandler,
   APIGatewayProxyResult,
 } from 'aws-lambda';
-import { formParser } from './parser';
 import { randomUUID } from 'node:crypto';
-import {
-  S3Client,
-  PutObjectCommandInput,
-  PutObjectCommand,
-} from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { dynamoDbService } from '@/services/dynamoDB';
 import { PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import { imageTable } from '@/tables';
 
-// const bucket = 'images-react-test';
 const bucket = process.env.bucket;
 const MAX_SIZE = 4000000; // 4MB
 const PNG_MIME_TYPE = 'image/png';
@@ -73,7 +67,7 @@ export const main: APIGatewayProxyHandler = async (
       Bucket: bucket,
       Key: fileName,
       Body: imageBuffer,
-      ContentType: `image/${fileType}`,
+      ContentType: fileType,
     };
 
     await s3Client.send(new PutObjectCommand(params));

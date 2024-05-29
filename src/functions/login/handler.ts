@@ -1,4 +1,4 @@
-import { apiResponses } from '@/libs';
+import { apiResponses, logExecutionTime } from '@/libs';
 import { dynamoDbService } from '@/services/dynamoDB';
 import {
   APIGatewayProxyEvent,
@@ -13,6 +13,7 @@ const secretKey = '1h175dyw54';
 export const main: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
+  const startExecutionTime = Date.now();
   console.log('event: ', event);
   const body = JSON.parse(event.body);
   const userName = body?.name;
@@ -34,16 +35,20 @@ export const main: APIGatewayProxyHandler = async (
           userId: user.id,
         };
         const token = jwt.sign(payload, secretKey);
+        console.log('response: ', { token, user: other });
 
+        logExecutionTime(startExecutionTime);
         return apiResponses._200({
           user: other,
           token,
         });
       } else {
+        logExecutionTime(startExecutionTime);
         return apiResponses._404({ message: 'Invalid name or password' });
       }
     } catch (error) {
-      console.log('ERROR HANDLER CREATE USER: ', error);
+      logExecutionTime(startExecutionTime);
+      console.log('ERROR HANDLER LOGIN USER: ', error);
 
       return apiResponses._500({
         message: 'Login user error',

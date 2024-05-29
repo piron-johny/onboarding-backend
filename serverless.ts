@@ -17,6 +17,8 @@ const serverlessConfiguration: AWS = {
   useDotenv: true,
   custom: {
     bucket: 'images-react-test',
+    userTable: 'UserTable',
+    imageTable: 'ImageTable',
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true,
@@ -51,8 +53,17 @@ const serverlessConfiguration: AWS = {
           'dynamodb:UpdateItem',
         ],
         Resource: [
-          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/UserTable/*',
-          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/ImageTable/*',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.userTable}',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}',
+          'arn:aws:dynamodb:us-east-1:${aws:accountId}:table/${self:custom.imageTable}/*',
+        ],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:PutObject', 's3:GetObject', 's3:ListBucket'],
+        Resource: [
+          'arn:aws:s3:::${self:custom.bucket}',
+          'arn:aws:s3:::${self:custom.bucket}/*',
         ],
       },
     ],

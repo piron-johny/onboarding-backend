@@ -3,10 +3,11 @@ export default {
   events: [
     {
       http: {
-        method: 'post',
+        method: 'POST',
         path: 'user/login',
         cors: true,
       },
     },
   ],
+  timeout: 15,
 };

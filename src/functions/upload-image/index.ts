@@ -15,6 +15,7 @@ export default {
       },
     },
   ],
+  timeout: 15,
   environment: {
     bucket: '${self:custom.bucket}',
   },
