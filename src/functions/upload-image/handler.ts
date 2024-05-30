@@ -64,11 +64,9 @@ export const main: APIGatewayProxyHandler = async (
 
     await s3Client.send(new PutObjectCommand(params));
 
-    const url = `https://${bucket}.s3.amazonaws.com/${fileName}`;
-
     const createImageParams: PutCommandInput = {
       TableName: imageTable.Properties.TableName,
-      Item: { id, url, userId, name, description },
+      Item: { id, url: fileName, userId, name, description },
     };
     await dynamoDbService.createImage(createImageParams);
 

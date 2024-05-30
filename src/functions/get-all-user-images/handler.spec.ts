@@ -1,5 +1,5 @@
 import { dynamoDbService } from '@/services/dynamoDB';
-import { apiResponses } from '@/libs';
+import { apiResponses, getSignedUrlsForImages } from '@/libs';
 import { main } from './handler';
 import { Callback, Context } from 'aws-lambda';
 
@@ -22,6 +22,15 @@ jest.mock('@/libs', () => ({
     _200: jest.fn(),
     _500: jest.fn(),
   },
+  getSignedUrlsForImages: jest.fn().mockResolvedValue([
+    {
+      id: 'string',
+      url: 'string',
+      userId: 'string',
+      name: 'string',
+      description: 'string',
+    },
+  ]),
 }));
 
 describe('Get all user images Handler Test', () => {
@@ -42,10 +51,15 @@ describe('Get all user images Handler Test', () => {
     } as any;
 
     const images = await dynamoDbService.getImagesByUserId('userId');
+    const imagesWithSignedUrls = await getSignedUrlsForImages(
+      'bucket',
+      images,
+      10,
+    );
 
     const response = await main(event, context, callback);
 
-    expect(response).toEqual(apiResponses._200(images));
+    expect(response).toEqual(apiResponses._200(imagesWithSignedUrls));
   });
 
   it('should return upload error', async () => {

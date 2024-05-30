@@ -15,4 +15,7 @@ export default {
       },
     },
   ],
+  environment: {
+    bucket: '${self:custom.bucket}',
+  },
 };
