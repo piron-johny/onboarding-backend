@@ -19,6 +19,7 @@ const serverlessConfiguration: AWS = {
     bucket: 'images-react-test',
     userTable: 'UserTable',
     imageTable: 'ImageTable',
+    jwtSecret: '${env:JWT_SECRET}',
     webpack: {
       webpackConfig: './webpack.config.js',
       includeModules: true,

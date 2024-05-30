@@ -9,7 +9,8 @@ import {
 } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
-const secretKey = '1h175dyw54';
+const secretKey = process.env.jwtSecret;
+
 export const main: APIGatewayAuthorizerHandler = async (
   event: APIGatewayRequestAuthorizerEvent,
   _context: Context,

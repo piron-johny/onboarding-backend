@@ -10,4 +10,7 @@ export default {
     },
   ],
   timeout: 15,
+  environment: {
+    jwtSecret: '${self:custom.jwtSecret}',
+  },
 };

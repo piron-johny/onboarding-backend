@@ -8,7 +8,7 @@ import {
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
-const secretKey = '1h175dyw54';
+const secretKey = process.env.jwtSecret;
 
 export const main: APIGatewayProxyHandler = async (
   event: APIGatewayProxyEvent,
