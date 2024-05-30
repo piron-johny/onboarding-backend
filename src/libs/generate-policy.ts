@@ -1,12 +1,12 @@
 import { AuthContext } from '@/types';
 import { APIGatewayAuthorizerResult } from 'aws-lambda';
 
-export const generatePolicy = function (
+export const generatePolicy = (
   principalId: string,
   effect: string,
   resource: string,
   context: AuthContext,
-): APIGatewayAuthorizerResult {
+): APIGatewayAuthorizerResult => {
   // Required output:
   const authResponse: any = {
     principalId,

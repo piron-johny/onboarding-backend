@@ -40,7 +40,7 @@ export const main: APIGatewayProxyHandler = async (
 
     return apiResponses._200({ message: 'Upload success' });
   } catch (error) {
-    console.log('UPLOAD IMAGE ERROR: ', error);
-    return apiResponses._500({ message: 'Error upload' });
+    console.log('REMOVE IMAGE ERROR: ', error);
+    return apiResponses._500({ message: 'Delete images error' });
   }
 };
