@@ -1,52 +1,29 @@
-import { apiResponses } from '@/libs';
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyHandler,
-  APIGatewayProxyResult,
-} from 'aws-lambda';
+import { apiResponses, zodValidator } from '@/libs';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import { randomUUID } from 'node:crypto';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { dynamoDbService } from '@/services/dynamoDB';
 import { PutCommandInput } from '@aws-sdk/lib-dynamodb';
 import { imageTable } from '@/tables';
+import { MIME_TYPES, uploadBodySchema } from './schema';
+import middy from '@middy/core';
+import { TUploadImageBody, ValidatedAPIGatewayProxyEvent } from '@/types';
 
 const bucket = process.env.bucket;
 const MAX_SIZE = 4000000; // 4MB
-const PNG_MIME_TYPE = 'image/png';
-const JPEG_MIME_TYPE = 'image/jpeg';
-const JPG_MIME_TYPE = 'image/jpg';
-const MIME_TYPES = [PNG_MIME_TYPE, JPEG_MIME_TYPE, JPG_MIME_TYPE];
-
-interface ImageData {
-  imageBase64?: string;
-  fileType?: string;
-}
-
-interface UploadBody {
-  imageData?: ImageData;
-  name?: string;
-  description?: string;
-}
 
 const s3Client = new S3Client({ region: 'us-east-1' });
 
-export const main: APIGatewayProxyHandler = async (
-  event: APIGatewayProxyEvent,
+const uploadImageHandler = async (
+  event: ValidatedAPIGatewayProxyEvent<TUploadImageBody>,
 ): Promise<APIGatewayProxyResult> => {
   console.log('event: ', event);
   const { userId } = event.requestContext.authorizer;
+  const { imageData, name, description } = event.body;
+  const { imageBase64, fileType } = imageData;
 
   try {
     const id = randomUUID();
-    const { imageData, name, description } = JSON.parse(
-      event.body ?? '{}',
-    ) as UploadBody;
-    const { imageBase64, fileType } = imageData ?? {};
-
-    if (!MIME_TYPES.includes(fileType)) {
-      return apiResponses._400({ message: 'Unsupported file type' });
-    }
-
     const imageBuffer = Buffer.from(imageBase64, 'base64');
 
     if (imageBuffer.byteLength > MAX_SIZE) {
@@ -76,3 +53,7 @@ export const main: APIGatewayProxyHandler = async (
     return apiResponses._500({ message: 'Error upload' });
   }
 };
+
+export const main = middy(uploadImageHandler).use(
+  zodValidator(uploadBodySchema),
+);

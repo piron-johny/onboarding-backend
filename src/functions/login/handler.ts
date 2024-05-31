@@ -1,56 +1,53 @@
-import { apiResponses } from '@/libs';
+import { apiResponses, zodValidator } from '@/libs';
 import { dynamoDbService } from '@/services/dynamoDB';
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyHandler,
-  APIGatewayProxyResult,
-} from 'aws-lambda';
+import middy from '@middy/core';
+import { APIGatewayProxyResult } from 'aws-lambda';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { loginBodySchema } from './schema';
+import { TLoginBody, ValidatedAPIGatewayProxyEvent } from '@/types';
 
 const secretKey = process.env.jwtSecret;
 
-export const main: APIGatewayProxyHandler = async (
-  event: APIGatewayProxyEvent,
+const loginHandler = async (
+  event: ValidatedAPIGatewayProxyEvent<TLoginBody>,
 ): Promise<APIGatewayProxyResult> => {
   console.log('event: ', event);
-  const body = JSON.parse(event.body ?? '{}');
-  const userName = body?.name;
-  const userPassword = body?.password;
 
-  if (userName && userPassword) {
-    try {
-      const [user] = await dynamoDbService.findUserByName(userName);
+  const body = event.body;
 
-      if (user) {
-        const { password, ...other } = user;
-        const comparePass = bcrypt.compareSync(userPassword, password);
+  const userName = body.name;
+  const userPassword = body.password;
 
-        if (!comparePass || user.name !== userName)
-          return apiResponses._404({ message: 'Invalid name or password' });
+  try {
+    const [user] = await dynamoDbService.findUserByName(userName);
 
-        const payload = {
-          userId: user.id,
-        };
-        const token = jwt.sign(payload, secretKey);
+    if (user) {
+      const { password, ...other } = user;
+      const comparePass = bcrypt.compareSync(userPassword, password);
 
-        return apiResponses._200({
-          user: other,
-          token,
-        });
-      } else {
+      if (!comparePass || user.name !== userName)
         return apiResponses._404({ message: 'Invalid name or password' });
-      }
-    } catch (error) {
-      console.log('ERROR HANDLER LOGIN USER: ', error);
 
-      return apiResponses._500({
-        message: 'Login user error',
+      const payload = {
+        userId: user.id,
+      };
+      const token = jwt.sign(payload, secretKey);
+
+      return apiResponses._200({
+        user: other,
+        token,
       });
+    } else {
+      return apiResponses._404({ message: 'Invalid name or password' });
     }
-  }
+  } catch (error) {
+    console.log('ERROR HANDLER LOGIN USER: ', error);
 
-  return apiResponses._404({
-    message: 'Name and password is required',
-  });
+    return apiResponses._500({
+      message: 'Login user error',
+    });
+  }
 };
+
+export const main = middy(loginHandler).use(zodValidator(loginBodySchema));

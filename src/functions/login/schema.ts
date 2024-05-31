@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-export const registrationBodySchema = z.object({
+export const loginBodySchema = z.object({
   name: z
     .string({
       message: 'The name must not be an empty string.',
